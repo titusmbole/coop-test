@@ -1,0 +1,355 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Cop API - Customer Transaction API",
+    "description": "RESTful API for managing customer accounts and fund transfers. This API allows creating customer accounts, transferring funds between accounts, and checking account balances.",
+    "contact": {
+      "name": "Corp Test Team",
+      "email": "support@corptest.com"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local Development Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Transaction Management",
+      "description": "APIs for managing fund transfers"
+    },
+    {
+      "name": "Customer Management",
+      "description": "APIs for managing customer accounts"
+    }
+  ],
+  "paths": {
+    "/api/v1/transactions/transfer": {
+      "post": {
+        "tags": [
+          "Transaction Management"
+        ],
+        "summary": "Transfer funds",
+        "description": "Transfers funds from one customer account to another",
+        "operationId": "transferFunds",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseTransferResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customers": {
+      "post": {
+        "tags": [
+          "Customer Management"
+        ],
+        "summary": "Create a new customer account",
+        "description": "Registers a new customer and creates their account with an initial deposit",
+        "operationId": "createCustomer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CustomerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCustomerResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customers/{accountNumber}/balance": {
+      "get": {
+        "tags": [
+          "Customer Management"
+        ],
+        "summary": "Get account balance",
+        "description": "Retrieves the current account balance for a given account number",
+        "operationId": "getAccountBalance",
+        "parameters": [
+          {
+            "name": "accountNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseBalanceResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TransferRequest": {
+        "type": "object",
+        "properties": {
+          "senderAccountNumber": {
+            "type": "string"
+          },
+          "senderName": {
+            "type": "string"
+          },
+          "receiverAccountNumber": {
+            "type": "string"
+          },
+          "receiverName": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "currency": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "channel": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "currency",
+          "receiverAccountNumber",
+          "receiverName",
+          "senderAccountNumber",
+          "senderName"
+        ]
+      },
+      "ApiResponseTransferResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/TransferResponse"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "TransferResponse": {
+        "type": "object",
+        "properties": {
+          "transactionReference": {
+            "type": "string"
+          },
+          "senderAccountNumber": {
+            "type": "string"
+          },
+          "senderName": {
+            "type": "string"
+          },
+          "receiverAccountNumber": {
+            "type": "string"
+          },
+          "receiverName": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "transactionType": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "channel": {
+            "type": "string"
+          },
+          "senderBalanceAfter": {
+            "type": "number"
+          },
+          "receiverBalanceAfter": {
+            "type": "number"
+          },
+          "transactionDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CustomerRequest": {
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 2
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 2
+          },
+          "email": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string",
+            "pattern": "^(\\+?\\d{1,3})?[\\s.-]?\\(?\\d{1,4}\\)?[\\s.-]?\\d{1,4}[\\s.-]?\\d{1,9}$"
+          },
+          "initialDeposit": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "email",
+          "firstName",
+          "initialDeposit",
+          "lastName",
+          "phoneNumber"
+        ]
+      },
+      "ApiResponseCustomerResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/CustomerResponse"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "CustomerResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "accountNumber": {
+            "type": "string"
+          },
+          "accountBalance": {
+            "type": "number"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ApiResponseBalanceResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean"
+          },
+          "message": {
+            "type": "string"
+          },
+          "data": {
+            "$ref": "#/components/schemas/BalanceResponse"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "BalanceResponse": {
+        "type": "object",
+        "properties": {
+          "accountNumber": {
+            "type": "string"
+          },
+          "customerName": {
+            "type": "string"
+          },
+          "availableBalance": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "enquiryDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}
