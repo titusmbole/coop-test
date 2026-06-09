@@ -116,7 +116,7 @@ com.cop.test/
 
 ---
 
-## Key Highlights
+## Validation & Error Handling
 
 - **Validation** — Email format, phone format, unique email & phone, name matching on transfers
 - **Transactions** — Full rollback on failure, pessimistic locking to prevent race conditions
