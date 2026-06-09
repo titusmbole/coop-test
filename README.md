@@ -73,8 +73,8 @@ src/main/java/com/cop/test/
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
-cd test
+git clone https://github.com/titusmbole/coop-test
+cd coop-test
 ```
 
 ### 2. Create the PostgreSQL Database
@@ -375,4 +375,76 @@ curl http://localhost:8080/api/v1/customers/ACC_NUMBER_HERE/balance
 
 ---
 
+## 🧪 Unit Tests
 
+The project includes comprehensive unit tests for both service and controller layers using **JUnit 5**, **Mockito**, and **MockMvc**.
+
+### Running Tests
+
+```bash
+./gradlew test
+```
+
+Test reports are generated at: `build/reports/tests/test/index.html`
+
+### Test Structure
+
+```
+src/test/java/com/cop/test/
+├── CopApplicationTests.java              # Context load test
+├── controller/
+│   ├── CustomerControllerTest.java       # Customer API endpoint tests
+│   └── TransactionControllerTest.java    # Transfer API endpoint tests
+└── service/
+    ├── CustomerServiceTest.java          # Customer business logic tests
+    └── TransactionServiceTest.java       # Transfer business logic tests
+```
+
+### Test Coverage Summary
+
+#### CustomerServiceTest (5 tests)
+| Test | Description |
+|------|-------------|
+| `createCustomer_Success` | Verifies successful customer creation with all fields |
+| `createCustomer_DuplicateEmail` | Ensures duplicate email throws `DuplicateResourceException` |
+| `createCustomer_DuplicatePhone` | Ensures duplicate phone throws `DuplicateResourceException` |
+| `getAccountBalance_Success` | Verifies balance retrieval returns correct data |
+| `getAccountBalance_AccountNotFound` | Ensures unknown account throws `ResourceNotFoundException` |
+
+#### TransactionServiceTest (8 tests)
+| Test | Description |
+|------|-------------|
+| `transferFunds_Success` | Verifies successful fund transfer end-to-end |
+| `transferFunds_SameAccount` | Rejects transfer to the same account |
+| `transferFunds_SenderNotFound` | Rejects when sender account doesn't exist |
+| `transferFunds_ReceiverNotFound` | Rejects when receiver account doesn't exist |
+| `transferFunds_SenderNameMismatch` | Rejects when sender name doesn't match account holder |
+| `transferFunds_ReceiverNameMismatch` | Rejects when receiver name doesn't match account holder |
+| `transferFunds_InsufficientFunds` | Rejects when sender has insufficient balance |
+| `transferFunds_CorrectBalanceUpdates` | Verifies exact debit/credit amounts |
+| `transferFunds_ZeroAmount` | Rejects zero or negative transfer amounts |
+
+#### CustomerControllerTest (4 tests)
+| Test | Description |
+|------|-------------|
+| `createCustomer_Success` | 201 Created with valid payload |
+| `createCustomer_InvalidEmail` | 400 Bad Request for invalid email format |
+| `createCustomer_MissingFields` | 400 Bad Request with validation errors |
+| `getBalance_Success` | 200 OK with balance data |
+| `getBalance_NotFound` | 404 Not Found for unknown account |
+
+#### TransactionControllerTest (6 tests)
+| Test | Description |
+|------|-------------|
+| `transferFunds_Success` | 200 OK with transfer details |
+| `transferFunds_ValidationError` | 400 Bad Request for missing fields |
+| `transferFunds_InsufficientFunds` | 400 Bad Request for low balance |
+| `transferFunds_SameAccount` | 400 Bad Request for same account |
+| `transferFunds_AccountNotFound` | 404 Not Found for unknown account |
+| `transferFunds_NameMismatch` | 400 Bad Request for name mismatch |
+
+---
+
+## 📄 License
+
+This project is for assessment/demonstration purposes.
